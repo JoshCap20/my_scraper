@@ -14,6 +14,21 @@ logger = logging.getLogger(__name__)
 
 
 class Scraper:
+    """
+    A web scraper class that supports retry logic, proxy usage, and custom headers.
+    
+    Attributes:
+        url (str): The URL to scrape.
+        timeout (int): Timeout for the requests.
+        retries (int): Number of retry attempts.
+        proxy (str | None): Proxy server URL.
+        headers (dict[str, str] | None): HTTP headers for the requests.
+        data (BeautifulSoup | None): The parsed HTML data.
+        cleaned_data (str): The cleaned and formatted HTML data.
+    
+    Methods:
+        scrape(): Performs the web scraping operation.
+    """
     def __init__(
         self,
         url: str,
@@ -88,14 +103,6 @@ class Scraper:
             logger.error(f"Network error or timeout: {e}")
         except RequestException as e:
             logger.error(f"Error during requests to {self.url}: {e}")
-            
-    def clean_data(self) -> str:
-        """
-        This method should be overridden in subclasses to clean the specific data.
-        
-        :return: Cleaned data as a string.
-        """
-        return self.data.prettify() if self.data else ""
 
     ##########################################################################################
     # Property Getters and Setters
@@ -129,6 +136,10 @@ class Scraper:
     @data.setter
     def data(self, data: BeautifulSoup | None):
         self._data = data
+        
+    @property
+    def cleaned_data(self) -> str:
+        return self.data.prettify() if self.data else ""
 
     @property
     def url(self) -> str:
@@ -151,4 +162,4 @@ if __name__ == "__main__":
     scraper = Scraper(url)
     scraper.scrape()
     if scraper.data:
-        print(scraper.data.prettify())
+        print(scraper.cleaned_data)
