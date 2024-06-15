@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class Scraper:
     """
     A web scraper class that supports retry logic, proxy usage, and custom headers.
-    
+
     Attributes:
         url (str): The URL to scrape.
         timeout (int): Timeout for the requests.
@@ -25,10 +25,11 @@ class Scraper:
         headers (dict[str, str] | None): HTTP headers for the requests.
         data (BeautifulSoup | None): The parsed HTML data.
         cleaned_data (str): The cleaned and formatted HTML data.
-    
+
     Methods:
         scrape(): Performs the web scraping operation.
     """
+
     def __init__(
         self,
         url: str,
@@ -113,6 +114,12 @@ class Scraper:
 
     @proxy.setter
     def proxy(self, proxy: str | None):
+        """
+        Sets the proxy for the scraper.
+
+        :param proxy: The proxy to be set. If None, the proxy will be cleared.
+        :raises ValueError: If the proxy is not a string.
+        """
         if proxy is not None and not isinstance(proxy, str):
             raise ValueError("Proxy must be a string")
         self._proxy = proxy
@@ -123,6 +130,11 @@ class Scraper:
 
     @headers.setter
     def headers(self, headers: dict[str, str] | None):
+        """
+        Sets the headers for the scraper.
+
+        :param headers: The headers to be set. If None, default headers will be used.
+        """
         if headers is None:
             headers = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
@@ -135,10 +147,20 @@ class Scraper:
 
     @data.setter
     def data(self, data: BeautifulSoup | None):
+        """
+        Sets the data for the scraper.
+
+        :param data: The data to be set. If None, the data will be cleared.
+        """
         self._data = data
-        
+
     @property
     def cleaned_data(self) -> str:
+        """
+        Returns the cleaned and formatted HTML data.
+
+        :return: The cleaned and formatted HTML data.
+        """
         return self.data.prettify() if self.data else ""
 
     @property
@@ -147,6 +169,13 @@ class Scraper:
 
     @url.setter
     def url(self, url: str):
+        """
+        Sets the URL for the scraper.
+
+        :param url: The URL to be set.
+        :raises ValueError: If the URL is None or not a string.
+        :raises ValueError: If the URL does not start with http or https.
+        """
         if not url:
             raise ValueError("URL cannot be None")
         if not isinstance(url, str):
