@@ -40,7 +40,7 @@ class DynamicScraper:
         rate_limit: int = 1
     ):
         """
-        Initializes the DynamicScraper with a URL, WebDriver path, timeout, and options.
+        Initializes the DynamicScraper with a URL, timeout, and options.
         
         :param url: URL to scrape.
         :param timeout: Request timeout in seconds.
@@ -57,9 +57,9 @@ class DynamicScraper:
 
     def _default_options(self) -> Options:
         """
-        Creates default Selenium Firefox options.
+        Creates default Selenium Chrome options.
         
-        :return: Configured Firefox options.
+        :return: Configured Chrome options.
         """
         options = Options()
         # options.add_argument("--headless")
