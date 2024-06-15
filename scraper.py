@@ -18,6 +18,7 @@ class Scraper:
         self,
         url: str,
         timeout: int = 15,
+        retries: int = 5,
         proxy: str | None = None,
         headers: dict[str, str] | None = None,
     ):
@@ -26,12 +27,14 @@ class Scraper:
 
         :param url: URL to scrape.
         :param timeout: Request timeout in seconds.
+        :param retries: Number of retries for the request.
         :param proxy: Optional proxy server.
         :param headers: Optional headers for the request.
         """
         self.url = url
         self.headers = headers
         self.timeout = timeout
+        self.retries = retries
         self.proxy = proxy
         self.data = None
         self.session = self._create_session()
@@ -44,7 +47,7 @@ class Scraper:
         """
         session = requests.Session()
         retries = Retry(
-            total=5,
+            total=self.retries,
             backoff_factor=1,
             status_forcelist=[500, 502, 503, 504],
             raise_on_status=False,
@@ -64,8 +67,14 @@ class Scraper:
         :raises ReadTimeout: If the request times out.
         :raises RequestException: If an error occurs during the request.
         """
+        if self.session is None:
+            raise ValueError("Session is not set")
         if self.url is None:
             raise ValueError("URL is not set")
+        if self.data is not None:
+            logger.info("Clearing existing data")
+            self.data = None
+
         try:
             logger.info(f"Scraping {self.url}")
             response = self.session.get(
@@ -79,6 +88,14 @@ class Scraper:
             logger.error(f"Network error or timeout: {e}")
         except RequestException as e:
             logger.error(f"Error during requests to {self.url}: {e}")
+            
+    def clean_data(self) -> str:
+        """
+        This method should be overridden in subclasses to clean the specific data.
+        
+        :return: Cleaned data as a string.
+        """
+        return self.data.prettify()
 
     ##########################################################################################
     # Property Getters and Setters
