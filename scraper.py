@@ -95,7 +95,7 @@ class Scraper:
         
         :return: Cleaned data as a string.
         """
-        return self.data.prettify()
+        return self.data.prettify() if self.data else ""
 
     ##########################################################################################
     # Property Getters and Setters
